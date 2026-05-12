@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genai-service
+  namespace: pawsible
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genai-service
+  template:
+    metadata:
+      labels:
+        app: genai-service
+    spec:
+      containers:
+      - name: genai-service
+        image: YOUR_ECR_REGISTRY/pawsible/genai-service:1.0.0
+        ports:
+        - containerPort: 8084
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: genai-service
+  namespace: pawsible
+spec:
+  selector:
+    app: genai-service
+  ports:
+  - port: 8084
+    targetPort: 8084
+

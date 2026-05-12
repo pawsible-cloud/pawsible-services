@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vets-service
+  namespace: pawsible
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vets-service
+  template:
+    metadata:
+      labels:
+        app: vets-service
+    spec:
+      containers:
+      - name: vets-service
+        image: YOUR_ECR_REGISTRY/pawsible/vets-service:1.0.0
+        ports:
+        - containerPort: 8083
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vets-service
+  namespace: pawsible
+spec:
+  selector:
+    app: vets-service
+  ports:
+  - port: 8083
+    targetPort: 8083
