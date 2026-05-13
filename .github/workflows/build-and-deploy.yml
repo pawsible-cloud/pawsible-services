@@ -50,19 +50,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build ${{ matrix.service }} with Maven
-        working-directory: pawsible-template/${{ matrix.artifact }}
-        run: |
-          mvn clean package -DskipTests
-          cp target/${{ matrix.artifact }}-*.jar ../${{ matrix.artifact }}.jar
-          ls -la ../
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -77,11 +64,14 @@ jobs:
       - name: Build and push Docker image for ${{ matrix.service }}
         working-directory: pawsible-template
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }} \
-                       -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest \
-                       --build-arg ARTIFACT_NAME=${{ matrix.artifact }} \
-                       --build-arg EXPOSED_PORT=${{ matrix.port }} \
-                       -f docker/Dockerfile .
+          # Use multi-stage build - Maven runs inside Docker
+          docker build \
+            -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest \
+            --build-arg ARTIFACT_NAME=${{ matrix.artifact }} \
+            --build-arg EXPOSED_PORT=${{ matrix.port }} \
+            --build-arg SERVICE_DIR=${{ matrix.artifact }} \
+            -f docker/Dockerfile.multistage .
           
           docker push ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest

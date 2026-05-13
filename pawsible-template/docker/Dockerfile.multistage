@@ -1,0 +1,39 @@
+# Stage 1: Build JAR with Maven
+FROM eclipse-temurin:17 AS maven-builder
+WORKDIR /workspace
+ARG SERVICE_DIR
+
+# Copy the entire project structure
+COPY . .
+
+# Build the service JAR
+RUN cd ${SERVICE_DIR} && \
+    mvn clean package -DskipTests -q
+
+# Stage 2: Runtime image
+FROM eclipse-temurin:17 AS builder
+WORKDIR application
+ARG ARTIFACT_NAME
+ARG SERVICE_DIR
+
+# Copy the built JAR from maven-builder stage
+COPY --from=maven-builder /workspace/${SERVICE_DIR}/target/${ARTIFACT_NAME}-*.jar application.jar
+
+RUN java -Djarmode=layertools -jar application.jar extract
+
+# Stage 3: Final image
+FROM eclipse-temurin:17
+WORKDIR application
+ARG EXPOSED_PORT
+EXPOSE ${EXPOSED_PORT}
+ENV SPRING_PROFILES_ACTIVE=docker
+
+COPY --from=builder application/dependencies/ ./
+RUN true
+COPY --from=builder application/spring-boot-loader/ ./
+RUN true
+COPY --from=builder application/snapshot-dependencies/ ./
+RUN true
+COPY --from=builder application/application/ ./
+
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
