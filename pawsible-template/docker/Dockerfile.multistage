@@ -1,5 +1,5 @@
 # Stage 1: Build JAR with Maven
-FROM eclipse-temurin:17 AS maven-builder
+FROM maven:3.9-eclipse-temurin-17 AS maven-builder
 WORKDIR /workspace
 ARG SERVICE_DIR
 
@@ -10,7 +10,7 @@ COPY . .
 RUN cd ${SERVICE_DIR} && \
     mvn clean package -DskipTests -q
 
-# Stage 2: Runtime image
+# Stage 2: Extract layers
 FROM eclipse-temurin:17 AS builder
 WORKDIR application
 ARG ARTIFACT_NAME
@@ -21,7 +21,7 @@ COPY --from=maven-builder /workspace/${SERVICE_DIR}/target/${ARTIFACT_NAME}-*.ja
 
 RUN java -Djarmode=layertools -jar application.jar extract
 
-# Stage 3: Final image
+# Stage 3: Final runtime image
 FROM eclipse-temurin:17
 WORKDIR application
 ARG EXPOSED_PORT
