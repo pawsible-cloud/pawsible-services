@@ -10,7 +10,7 @@ imagePullSecrets:
 
 defaultImage:
   pullPolicy: IfNotPresent
-  tag: "d80e6b116f75493307319a09da9403714f66cebc"
+  tag: "9fc890da7be9c83cf2b0e97ecd6b2e43d297ac1b"
 
 services:
   configServer:
