@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: YOUR_ECR_REGISTRY/pawsible/api-gateway:1.0.0
+        image: 268015775379.dkr.ecr.us-east-1.amazonaws.com/pawsible/api-gateway:1.0.0
         ports:
         - containerPort: 8080
         resources:
