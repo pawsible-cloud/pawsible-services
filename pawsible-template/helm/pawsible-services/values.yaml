@@ -1,0 +1,135 @@
+namespace: pawsible
+
+registry:
+  account: "268015775379"
+  region: "us-east-1"
+  repository: "pawsible"
+
+imagePullSecrets:
+  - name: ecr-secret
+
+defaultImage:
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+services:
+  configServer:
+    name: config-server
+    replicas: 1
+    image: config-server
+    port: 8888
+    env: []
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  discoveryServer:
+    name: discovery-server
+    replicas: 1
+    image: discovery-server
+    port: 8761
+    env: []
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  apiGateway:
+    name: api-gateway
+    replicas: 1
+    image: api-gateway
+    port: 8080
+    env: []
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "1Gi"
+        cpu: "1000m"
+
+  customersService:
+    name: customers-service
+    replicas: 1
+    image: customers-service
+    port: 8081
+    env: []
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  visitsService:
+    name: visits-service
+    replicas: 1
+    image: visits-service
+    port: 8082
+    env: []
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  vetsService:
+    name: vets-service
+    replicas: 1
+    image: vets-service
+    port: 8083
+    env: []
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  genaiService:
+    name: genai-service
+    replicas: 1
+    image: genai-service
+    port: 8084
+    env: []
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "1Gi"
+        cpu: "1000m"
+
+  adminServer:
+    name: admin-server
+    replicas: 1
+    image: admin-server
+    port: 9090
+    env: []
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+serviceMonitor:
+  enabled: false
+  namespace: monitoring
+  interval: 15s
+  path: /actuator/prometheus
+
+healthCheck:
+  enabled: false
