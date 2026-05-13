@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 env:
   AWS_REGION: us-east-1
@@ -24,14 +21,14 @@ jobs:
     strategy:
       matrix:
         service:
-          - config-server
-          - discovery-server
+          - admin-server
           - api-gateway
+          - config-server
           - customers-service
+          - discovery-server
+          - genai-service
           - vets-service
           - visits-service
-          - genai-service
-          - admin-server
 
     steps:
       - name: Checkout code
@@ -50,14 +47,22 @@ jobs:
 
       - name: Build Docker image
         run: |
+          cd pawsible-template
           docker build -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }} \
                        -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest \
-                       ./${{ matrix.service }}
+                       ./spring-petclinic-${{ matrix.service }}
 
       - name: Push image to Amazon ECR
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest
+
+  update-helm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Update Helm values with new image tag
         run: |
