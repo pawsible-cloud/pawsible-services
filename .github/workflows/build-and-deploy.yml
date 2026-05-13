@@ -64,7 +64,6 @@ jobs:
       - name: Build and push Docker image for ${{ matrix.service }}
         working-directory: pawsible-template
         run: |
-          # Use multi-stage build - Maven runs inside Docker
           docker build \
             -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }} \
             -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest \
@@ -79,13 +78,19 @@ jobs:
   update-helm:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write        # <-- THIS is the fix: allow push to repo
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
 
       - name: Update Helm values with new image tag
         run: |
-          sed -i 's/tag: "latest"/tag: "${{ github.sha }}"/g' pawsible-template/helm/pawsible-services/values.yaml
+          sed -i 's/tag: ".*"/tag: "${{ github.sha }}"/g' pawsible-template/helm/pawsible-services/values.yaml
+          cat pawsible-template/helm/pawsible-services/values.yaml | grep tag
 
       - name: Commit and push updated values
         run: |
@@ -93,4 +98,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add pawsible-template/helm/pawsible-services/values.yaml
           git diff --staged --quiet || git commit -m "ci: update image tags to ${{ github.sha }}"
-          git push
+          git push origin main
