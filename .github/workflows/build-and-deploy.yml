@@ -55,15 +55,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
-          cache-dependency-path: 'pawsible-template/pom.xml'
 
       - name: Build ${{ matrix.service }} with Maven
+        working-directory: pawsible-template/${{ matrix.artifact }}
         run: |
-          cd pawsible-template/${{ matrix.artifact }}
           mvn clean package -DskipTests
-          # Copy JAR to parent directory for Docker to find
-          cp target/${{ matrix.artifact }}-*.jar ../$(basename ${{ matrix.artifact }}).jar
+          cp target/${{ matrix.artifact }}-*.jar ../${{ matrix.artifact }}.jar
           ls -la ../
 
       - name: Configure AWS credentials
