@@ -1,0 +1,72 @@
+name: Build and Deploy to ECR
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 268015775379
+  REGISTRY: 268015775379.dkr.ecr.us-east-1.amazonaws.com
+  REGISTRY_ALIAS: pawsible
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        service:
+          - config-server
+          - discovery-server
+          - api-gateway
+          - customers-service
+          - vets-service
+          - visits-service
+          - genai-service
+          - admin-server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }} \
+                       -t ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest \
+                       ./${{ matrix.service }}
+
+      - name: Push image to Amazon ECR
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.REGISTRY_ALIAS }}/${{ matrix.service }}:latest
+
+      - name: Update Helm values with new image tag
+        run: |
+          sed -i 's/tag: "latest"/tag: "${{ github.sha }}"/g' pawsible-template/helm/pawsible-services/values.yaml
+
+      - name: Commit and push updated values
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add pawsible-template/helm/pawsible-services/values.yaml
+          git diff --staged --quiet || git commit -m "ci: update image tags to ${{ github.sha }}"
+          git push
