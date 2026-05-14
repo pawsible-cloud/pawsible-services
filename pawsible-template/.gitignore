@@ -1,0 +1,37 @@
+# Compiled Java output
+target/
+*.class
+*.jar
+*.war
+
+# Maven
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Environment and secrets - NEVER commit these
+.env
+*.env
+.env.local
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Docker override files
+docker-compose.override.yml
+
+# Binary executables
+argocd-linux-amd64
+eksctl
+kubectl
+
+# Log files
+*.log
+logs/
