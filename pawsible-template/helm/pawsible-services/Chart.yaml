@@ -1,17 +1,6 @@
 apiVersion: v2
 name: pawsible-services
-description: Spring PetClinic microservices deployment on Kubernetes with ArgoCD
+description: Spring PetClinic microservices on Kubernetes
 type: application
 version: 1.0.0
 appVersion: "4.0.1"
-keywords:
-  - pawsible
-  - petclinic
-  - microservices
-  - kubernetes
-maintainers:
-  - name: Pawsible Team
-    email: dev@pawsible.cloud
-home: https://github.com/pawsible-cloud/pawsible-services
-sources:
-  - https://github.com/pawsible-cloud/pawsible-services

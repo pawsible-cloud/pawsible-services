@@ -1,9 +1,22 @@
 #!/bin/bash
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-config-server:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-discovery-server:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-api-gateway:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-visits-service:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-vets-service:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-customers-service:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-admin-server:${VERSION}
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-genai-service:${VERSION}
+
+SERVICES=(
+  admin-server
+  api-gateway
+  config-server
+  customers-service
+  discovery-server
+  genai-service
+  vets-service
+  visits-service
+)
+
+for SERVICE in "${SERVICES[@]}"
+do
+  echo "Pushing ${SERVICE}..."
+
+  docker push \
+    ${ECR_REGISTRY}/pawsible/${SERVICE}:${VERSION}
+done
+
+echo "All images pushed successfully."

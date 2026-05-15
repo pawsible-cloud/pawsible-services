@@ -6,7 +6,6 @@ metadata:
   namespace: {{ .Values.serviceMonitor.namespace }}
   labels:
     app: pawsible-services
-    version: {{ .Chart.AppVersion }}
 spec:
   namespaceSelector:
     matchNames:

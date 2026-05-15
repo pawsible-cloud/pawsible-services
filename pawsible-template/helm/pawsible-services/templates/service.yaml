@@ -7,7 +7,6 @@ metadata:
   namespace: {{ $.Values.namespace }}
   labels:
     app: {{ $service.name }}
-    version: {{ $.Chart.AppVersion }}
 spec:
   type: ClusterIP
   ports:
@@ -17,5 +16,4 @@ spec:
     name: http
   selector:
     app: {{ $service.name }}
-  sessionAffinity: None
 {{- end }}

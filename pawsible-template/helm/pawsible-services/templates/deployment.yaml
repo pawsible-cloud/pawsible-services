@@ -57,8 +57,4 @@ spec:
         {{- end }}
         resources:
           {{- toYaml $service.resources | nindent 10 }}
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
 {{- end }}
