@@ -21,3 +21,18 @@ target/
 generated/
 
 **/.DS_Store
+
+# Terraform
+.terraform/
+terraform/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform.lock.hcl
+
+# Binaries
+argocd-linux-amd64
+*-linux-amd64
+awscliv2/
+awscliv2.zip
+-p
