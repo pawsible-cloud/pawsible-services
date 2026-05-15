@@ -11,9 +11,9 @@ imagePullSecrets:
 defaultImage:
   pullPolicy: IfNotPresent
 <<<<<<< HEAD
-  tag: "latest"
+  tag: "5baab9505242fb52ec7aeaee15c9a83c282315cc"
 =======
-  tag: "9fc890da7be9c83cf2b0e97ecd6b2e43d297ac1b"
+  tag: "5baab9505242fb52ec7aeaee15c9a83c282315cc"
 >>>>>>> 5a8a823e9a1eaf0026df8cd1f46081b703f43019
 
 services:
