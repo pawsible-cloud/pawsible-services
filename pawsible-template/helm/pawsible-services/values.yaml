@@ -1,7 +1,7 @@
 namespace: pawsible
 
 registry:
-  account: "268015775379"
+  account: "268015775379"   # Replace with your account ID
   region: "us-east-1"
   repository: "pawsible"
 
@@ -10,7 +10,7 @@ imagePullSecrets:
 
 defaultImage:
   pullPolicy: IfNotPresent
-  tag: "d80e6b116f75493307319a09da9403714f66cebc"
+  tag: "latest"
 
 services:
   configServer:
